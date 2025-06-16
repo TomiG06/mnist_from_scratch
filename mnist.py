@@ -1,6 +1,6 @@
 import numpy as np
 from datasets import load_dataset
-from tqdm import trange
+from tqdm import trange, tqdm
 import matplotlib.pyplot as plt
 
 def load_mnist():
@@ -15,7 +15,6 @@ def load_mnist():
 
 
 # TODO: add biases
-# better structure, probably a 
 
 def Linear(in_dim, out_dim):
     return (np.random.randn(in_dim, out_dim) * np.sqrt(2/in_dim)).astype(np.float32)
@@ -73,14 +72,15 @@ if __name__ == "__main__":
         for i in t:
             batch = np.arange(BATCH_SIZE * i, min(BATCH_SIZE * (i+1), len(X_train)))
 
+            # flatten the images of the batch
             X = X_train[batch].reshape((-1, 28*28))
             Y = Y_train[batch] # classes
 
-            # one-hot representation
+            # one-hot representation used later
             Y_one_hot = np.zeros((len(Y), 10))
             Y_one_hot[np.arange(len(Y)), Y] = 1
 
-            # Forward Pass
+            # ----- Forward Pass -----
 
             # Layer 1
             l1_out = X.dot(l1)
@@ -97,7 +97,7 @@ if __name__ == "__main__":
             # Loss
             loss = CrossEntropyLoss(sm, Y)
 
-            # Backward Pass (Calculating gradients)
+            # ----- Backward Pass (Calculating gradients) ------
 
             dLoss_dl2_out = 1/BATCH_SIZE * (sm - Y_one_hot)
 
@@ -109,12 +109,17 @@ if __name__ == "__main__":
 
             dl_1 = X.T.dot(dLoss_dl1_out)
 
+            # ----- Optimization ------
+
             # SGD (with Momentum)
+
             v1 = MOMENTUM * v1 - lr * dl_1
             v2 = MOMENTUM * v2 - lr * dl_2
 
             l1 += v1
             l2 += v2
+
+            # Some metrics for the sake of analysis and visualization
 
             losses.append(loss)
             accuracy = (np.argmax(sm, axis=1) == Y).astype(np.float32).mean()
@@ -132,7 +137,7 @@ if __name__ == "__main__":
     print("Running Tests...")
     accuracies.clear()
 
-    for img, lbl in zip(X_test, Y_test):
+    for img, lbl in tqdm(zip(X_test, Y_test)):
         z_1 = img.flatten().dot(l1)
         rel = ReLU(z_1)
         z_2 = rel.dot(l2)
@@ -141,3 +146,7 @@ if __name__ == "__main__":
         accuracies.append(int(np.argmax(sm) == lbl))
 
     print("Final Accuracy:", np.mean(accuracies))
+
+    if input("Do you want to save the weights? (Y/other): ").lower() == "y":
+        np.savez_compressed("mnist_from_scratch_weights.npz", l1=l1, l2=l2)
+
