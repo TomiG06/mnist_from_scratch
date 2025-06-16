@@ -2,6 +2,18 @@
 
 This repository implements a simple, 2-Layer Neural Network and trains it over the MNIST dataset, a classic collection of 70,000 handwritten digit images.
 
+## Setup and Run
+
+```
+git clone https://github.com/TomiG06/mnist_from_scratch.git
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python mnist.py
+```
+
+To exit your virtual environment execute the `deactivate` command.
+
 ## Network Architecture
 
 | Layer         | Input Size | Output Size | Activation |
@@ -23,37 +35,15 @@ The model is trained using 60,000 images from the MNIST dataset (out of the 70,0
 The network weights were initialized using Kaiming Initialization
 
 ### **Loss Function**: *Cross Entropy Loss*
-$$
-- \sum_{i=1}^{C} y_i \log(\hat{y_i})
-$$
 
 ### **Optimizer**: *Stochastic Gradient Descent (SGD)*
 
-#### Learning Rate (Initial): 
-$$
-\eta_0 = 0.01
-$$
-
-#### Learning Rate Decay: 
-Exponential decay with rate $ \lambda = \frac{ln(2)}{10}$. Caluclated at the beginning of every epoch $t$ as
-$$
-\eta_{i+1} = \eta_0 \times e^{-\lambda t}
-$$
-
-#### Momentum: 
-$$
-\gamma = 0.9
-$$
-
-#### Velocity Update:
-$$
-u_{i+1} := \gamma u_i - \eta \nabla_W L(W_{i-1}) 
-$$
-
-#### Weights Update:
-$$
-W_{i+1} := W_{i} + u_{i+1}
-$$
+| Parameter           | Value       |
+|---------------------|-------------|
+| Learning Rate       | 0.01        |
+| Learning Rate Decay | ln(2) / 10  |
+| Decay Type          | Exponential |
+| Momentum            | 0.9         |
 
 ## Testing
 
