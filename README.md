@@ -27,7 +27,7 @@ The model is trained using 60,000 images from the MNIST dataset (out of the 70,0
 
 | Parameter   | Value |
 |-------------|-------|
-| EPOCHS      | 25    |
+| EPOCHS      | 30    |
 | BATCH_SIZE  | 64    |
 
 ### Weight Initialization
@@ -41,16 +41,17 @@ The network weights were initialized using Kaiming Initialization
 | Parameter           | Value       |
 |---------------------|-------------|
 | Learning Rate       | 0.01        |
-| Learning Rate Decay | ln(2) / 10  |
+| Learning Rate Decay | ln(2) / 7   |
 | Decay Type          | Exponential |
-| Momentum            | 0.9         |
+| Momentum            | 0.945       |
+| Weight Decay        | 1e-4        |
 
 ## Testing
 
 In order to evaluate the model's performance, we utilize the other 10,000 images of the MNIST dataset our model has never seen during training.
 
 **Accuracy: ~ 97 %**
-
+**Highest Achieved: 98.1 %**
 
 ## Other
 
@@ -60,6 +61,6 @@ In order to evaluate the model's performance, we utilize the other 10,000 images
 ## Todo
 
 - [ ] Biases
-- [ ] L2 regularization
+- [x] L2 regularization
 - [ ] Early stopping
 

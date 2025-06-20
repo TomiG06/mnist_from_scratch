@@ -53,11 +53,12 @@ if __name__ == "__main__":
     v1 = np.zeros_like(l1)
     v2 = np.zeros_like(l2)
 
-    EPOCHS = 25
+    EPOCHS = 30
     BATCH_SIZE = 64
     LR = 0.01
-    LR_DECAY = np.log(2) / 10
-    MOMENTUM = 0.9
+    LR_DECAY = np.log(2) / 7
+    MOMENTUM = 0.945
+    WEIGHT_DECAY = 1e-4
 
     losses, accuracies = [], []
 
@@ -97,17 +98,21 @@ if __name__ == "__main__":
             # Loss
             loss = CrossEntropyLoss(sm, Y)
 
+            # Apply L2 Regularization
+
+            loss += WEIGHT_DECAY * (np.sum(l1**2) + np.sum(l2**2))
+
             # ----- Backward Pass (Calculating gradients) ------
 
             dLoss_dl2_out = 1/BATCH_SIZE * (sm - Y_one_hot)
 
-            dl_2 = l1_out_relu.T.dot(dLoss_dl2_out)
+            dl_2 = l1_out_relu.T.dot(dLoss_dl2_out) + 2 * WEIGHT_DECAY * l2
 
             dLoss_drelu = dLoss_dl2_out.dot(l2.T)
 
             dLoss_dl1_out = dLoss_drelu * (l1_out_relu > 0)
 
-            dl_1 = X.T.dot(dLoss_dl1_out)
+            dl_1 = X.T.dot(dLoss_dl1_out) + 2 * WEIGHT_DECAY * l1
 
             # ----- Optimization ------
 
