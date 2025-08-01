@@ -14,8 +14,6 @@ def load_mnist():
     return X_train, Y_train, X_test, Y_test
 
 
-# TODO: add biases
-
 def Linear(in_dim, out_dim):
     return (np.random.randn(in_dim, out_dim) * np.sqrt(2/in_dim)).astype(np.float32)
 
@@ -48,10 +46,16 @@ if __name__ == "__main__":
     X_train, Y_train, X_test, Y_test = load_mnist()
 
     l1 = Linear(28*28, 128)
-    l2 = Linear(128, 10)
+    b1 = np.ones(l1.shape[1]) * 0.001
 
-    v1 = np.zeros_like(l1)
-    v2 = np.zeros_like(l2)
+    l2 = Linear(128, 10)
+    b2 = np.ones(l2.shape[1]) * 0.001
+
+    vw1 = np.zeros_like(l1)
+    vw2 = np.zeros_like(l2)
+
+    vb1 = np.zeros_like(b1)
+    vb2 = np.zeros_like(b2)
 
     EPOCHS = 30
     BATCH_SIZE = 64
@@ -84,7 +88,7 @@ if __name__ == "__main__":
             # ----- Forward Pass -----
 
             # Layer 1
-            l1_out = X.dot(l1)
+            l1_out = X.dot(l1) + b1
 
             # Layer 1 activation
             l1_out_relu = ReLU(l1_out)
@@ -117,12 +121,20 @@ if __name__ == "__main__":
             # ----- Optimization ------
 
             # SGD (with Momentum)
+            
+            # Weights
+            vw1 = MOMENTUM * vw1 - lr * dl_1
+            vw2 = MOMENTUM * vw2 - lr * dl_2
 
-            v1 = MOMENTUM * v1 - lr * dl_1
-            v2 = MOMENTUM * v2 - lr * dl_2
+            l1 += vw1
+            l2 += vw2
 
-            l1 += v1
-            l2 += v2
+            # Biases
+            vb1 = MOMENTUM * vb1 - lr * 0.5 * np.mean(dLoss_dl1_out, axis=0)
+            vb2 = MOMENTUM * vb2 - lr * 0.5 * np.mean(dLoss_dl2_out, axis=0)
+
+            b1 += vb1
+            b2 += vb2
 
             # Some metrics for the sake of analysis and visualization
 
@@ -153,5 +165,5 @@ if __name__ == "__main__":
     print("Final Accuracy:", np.mean(accuracies))
 
     if input("Do you want to save the weights? (Y/other): ").lower() == "y":
-        np.savez_compressed("mnist_from_scratch_weights.npz", l1=l1, l2=l2)
+        np.savez_compressed("mnist_from_scratch_weights.npz", l1=l1, l2=l2, b1=b1, b2=b2)
 

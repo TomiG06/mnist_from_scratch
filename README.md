@@ -50,7 +50,8 @@ The network weights were initialized using Kaiming Initialization
 
 In order to evaluate the model's performance, we utilize the other 10,000 images of the MNIST dataset our model has never seen during training.
 
-**Accuracy: ~ 97 %**
+**Accuracy: ~ 98 %**
+
 **Highest Achieved: 98.1 %**
 
 ## Other
@@ -60,7 +61,7 @@ In order to evaluate the model's performance, we utilize the other 10,000 images
 
 ## Todo
 
-- [ ] Biases
+- [x] Biases
 - [x] L2 regularization
 - [ ] Early stopping
 
